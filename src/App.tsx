@@ -1,4 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { 
+  Plus, 
+  CheckCircle2, 
+  Library, 
+  Palette, 
+  Sparkles, 
+  Image as ImageIcon, 
+  Code, 
+  Send, 
+  Paperclip,
+  Menu,
+  X,
+  AlertTriangle
+} from 'lucide-react';
 
 // مفتاح API الخاص بك
 const GEMINI_API_KEY = "AQ.Ab8RN6LG5xv2wKFp-2Dz85_RB2nQQMCKOjI0FHN_Jt_OWZVydg";
@@ -13,6 +27,14 @@ interface Message {
   mediaUrl?: string;
   isImage?: boolean;
 }
+
+const SECTIONS = [
+  { id: 'library', name: 'المكتبة', icon: Library },
+  { id: 'designs', name: 'التصميمات', icon: Palette },
+  { id: 'logo', name: 'صنع اللوجو', icon: Sparkles },
+  { id: 'ads', name: 'المنشورات الدعائية', icon: ImageIcon },
+  { id: 'apps', name: 'صنع التطبيقات', icon: Code },
+];
 
 export default function App() {
   // البريد الحالي للمستخدم
@@ -33,8 +55,9 @@ export default function App() {
 
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [activeTab, setActiveTab] = useState<'chat' | 'library' | 'designs' | 'logo' | 'ads' | 'apps'>('chat');
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -129,110 +152,96 @@ export default function App() {
     }
   };
 
+  const getActiveSectionName = () => {
+    if (activeTab === 'chat') return 'المحادثة الرئيسية';
+    return SECTIONS.find(s => s.id === activeTab)?.name || 'القسم المجهول';
+  };
+
   return (
-    <div style={{ display: 'flex', height: '100vh', backgroundColor: '#f0f4f9', color: '#1f1f1f', direction: 'rtl', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+    <div className="flex h-screen bg-gray-50 text-gray-800 dir-rtl font-sans antialiased overflow-hidden">
       
-      {/* القائمة الجانبية */}
-      <div style={{
-        position: 'fixed', top: 0, right: sidebarOpen ? 0 : '-300px', width: '280px', height: '100%', backgroundColor: '#f8fafc', borderLeft: '1px solid #e2e8f0', transition: '0.3s ease', zIndex: 1000, padding: '16px', display: 'flex', flexDirection: 'column'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <button onClick={() => setSidebarOpen(false)} style={{ background: 'none', border: 'none', fontSize: '1.4rem', cursor: 'pointer' }}>✕</button>
-          <span style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>Arabian AI</span>
+      {/* القائمة الجانبية (Sidebar) */}
+      <div className={`fixed inset-y-0 right-0 z-50 w-72 bg-white shadow-xl transform ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out md:relative md:translate-x-0 flex flex-col border-l border-gray-100`}>
+        <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-10">
+          <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight flex items-center gap-2">
+            <Sparkles className="text-blue-600" size={24} />
+            <span>Arabian AI</span>
+          </h1>
+          <button onClick={() => setSidebarOpen(false)} className="md:hidden text-gray-500 hover:text-gray-900 transition-colors p-1.5 rounded-lg hover:bg-gray-100">
+            <X size={22} />
+          </button>
         </div>
 
-        <button onClick={() => { setMessages([]); setSidebarOpen(false); }} style={{ width: '100%', padding: '12px', borderRadius: '25px', border: 'none', backgroundColor: '#e2e8f0', color: '#1e293b', fontWeight: 'bold', cursor: 'pointer', marginBottom: '16px' }}>
-          ✏️ محادثة جديدة
-        </button>
+        <div className="p-5 space-y-5 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200">
+          {/* زر محادثة جديدة */}
+          <button 
+            onClick={() => { setActiveTab('chat'); setMessages([{ id: '1', sender: 'ai', text: `مرحباً محمود (${VIP_EMAIL})! تم التعرف على حسابك وتفعيل كافة المزايا المتقدمة مجاناً بدون اشتراك 🔓.`}]); setSidebarOpen(false); }}
+            className="w-full flex items-center justify-center gap-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 py-3.5 px-5 rounded-2xl font-semibold transition-colors shadow-sm"
+          >
+            <Plus size={19} className="shrink-0" />
+            <span>محادثة جديدة ✏️</span>
+          </button>
 
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <div style={{ padding: '10px', borderRadius: '10px', backgroundColor: '#fff', fontSize: '0.85rem', color: '#475569', border: '1px solid #e2e8f0' }}>
-            <strong>البريد النشط:</strong><br />
-            {userEmail}
+          {/* بطاقة حالة المستخدم */}
+          <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 space-y-2 shadow-inner">
+            <div className="text-xs font-medium text-gray-500">البريد النشط:</div>
+            <div className="text-sm font-bold text-gray-800 truncate" title={userEmail}>{userEmail}</div>
           </div>
 
           {isVipUser ? (
-            <div style={{ padding: '10px', borderRadius: '10px', backgroundColor: '#dcfce7', color: '#15803d', border: '1px solid #86efac', fontWeight: 'bold', fontSize: '0.85rem' }}>
-              ✅ تم تفعيل الوصول الكامل والكرت المفتوح مجاناً!
+            <div className="bg-green-50 text-green-800 p-4 rounded-2xl border border-green-200 text-sm font-bold flex items-center gap-3 shadow-green-100/30 shadow-sm">
+              <CheckCircle2 size={20} className="text-green-600 shrink-0" />
+              <span>تم تفعيل الوصول الكامل والكرت المفتوح مجاناً!</span>
             </div>
           ) : (
-            <div style={{ padding: '10px', borderRadius: '10px', backgroundColor: '#fee2e2', color: '#991b1b', border: '1px solid #fca5a5', fontSize: '0.85rem' }}>
-              🔒 حساب عادي (يلزم الاشتراك أو الدخول بحساب VIP)
+             <div className="bg-amber-50 text-amber-900 p-4 rounded-2xl border border-amber-200 text-sm font-medium flex items-center gap-3 shadow-amber-100/30 shadow-sm">
+              <AlertTriangle size={20} className="text-amber-600 shrink-0" />
+              <span>🔒 حساب عادي (يلزم الاشتراك أو الدخول بحساب VIP)</span>
             </div>
           )}
+
+          {/* أقسام الملاحة (Navigation Sections) */}
+          <div className="pt-5 border-t border-gray-100 space-y-1.5">
+            <div className="text-xs font-bold text-gray-400 px-3 pb-2.5 tracking-wider">الأقسام الرئيسية</div>
+            {SECTIONS.map((section) => {
+              const Icon = section.icon;
+              return (
+                <button
+                  key={section.id}
+                  onClick={() => { setActiveTab(section.id as any); setSidebarOpen(false); }}
+                  className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${
+                    activeTab === section.id 
+                      ? 'bg-blue-50 text-blue-700 shadow-sm' 
+                      : 'text-gray-600 hover:bg-gray-100/60 hover:text-gray-900'
+                  }`}
+                >
+                  <Icon size={19} className={`shrink-0 ${activeTab === section.id ? 'text-blue-600' : 'text-gray-400'}`} />
+                  <span>{section.name}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontWeight: 'bold', fontSize: '0.85rem' }}>MAHMOUD RIZK</span>
-          <span style={{ backgroundColor: isVipUser ? '#10b981' : '#64748b', color: '#fff', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem' }}>
+         <div className="p-5 border-t border-gray-100 mt-auto bg-gray-50 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 truncate">
+             <div className="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-lg shadow-inner">M</div>
+             <span className="font-semibold text-sm text-gray-800 truncate" title="MAHMOUD RIZK">MAHMOUD RIZK</span>
+          </div>
+          <span className={`px-3 py-1 rounded-full text-xs font-bold ${isVipUser ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-700'}`}>
             {isVipUser ? 'VIP UNLIMITED' : 'FREE'}
           </span>
         </div>
       </div>
 
-      {/* الشاشة الرئيسية */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%' }}>
-        
-        {/* الشريط العلوي */}
-        <header style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #e2e8f0', backgroundColor: '#ffffff' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ width: '30px', height: '30px', borderRadius: '50%', backgroundColor: isVipUser ? '#10b981' : '#0284c7', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>M</div>
-            <span style={{ fontWeight: 'bold', fontSize: '0.95rem' }}>
-              {isVipUser ? 'Gemini Pro VIP (غير محدود)' : 'Gemini Basic'}
-            </span>
-          </div>
-          <button onClick={() => setSidebarOpen(true)} style={{ background: 'none', border: 'none', fontSize: '1.4rem', cursor: 'pointer' }}>☰</button>
-        </header>
-
-        {/* منطقة الرسائل */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{ width: '100%', maxWidth: '720px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {messages.map((msg) => (
-              <div key={msg.id} style={{
-                alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-                backgroundColor: msg.sender === 'user' ? '#e0f2fe' : '#ffffff',
-                color: '#0f172a',
-                padding: '14px 18px',
-                borderRadius: '20px',
-                maxWidth: '85%',
-                lineHeight: '1.6',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-                border: msg.sender === 'ai' ? '1px solid #e2e8f0' : 'none',
-                whiteSpace: 'pre-wrap'
-              }}>
-                {msg.mediaUrl && (
-                  <img src={msg.mediaUrl} alt="media" style={{ maxWidth: '100%', borderRadius: '12px', marginBottom: '10px', display: 'block' }} />
-                )}
-                {msg.text}
-              </div>
-            ))}
-            {loading && <div style={{ alignSelf: 'flex-start', color: '#64748b' }}>جاري التفكير والتوليد... ⏳</div>}
-            <div ref={messagesEndRef} />
-          </div>
-        </div>
-
-        {/* حقل الإدخال */}
-        <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'center' }}>
-          <div style={{ width: '100%', maxWidth: '720px', backgroundColor: '#ffffff', borderRadius: '30px', border: '1px solid #cbd5e1', padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '10px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-            
-            <input type="file" ref={fileInputRef} onChange={handleFileUpload} style={{ display: 'none' }} />
-            <button onClick={() => fileInputRef.current?.click()} style={{ background: 'none', border: 'none', fontSize: '1.3rem', cursor: 'pointer', color: isVipUser ? '#0284c7' : '#94a3b8' }} title={isVipUser ? "إرفاق ملف" : "متاح فقط للـ VIP"}>+</button>
-
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder={selectedFile ? `جاهز لإرسال: ${selectedFile.name}` : "اكتب سؤالك أو طلبك هنا..."}
-              style={{ flex: 1, border: 'none', outline: 'none', fontSize: '1rem', backgroundColor: 'transparent' }}
-            />
-
-            <button onClick={handleSend} style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#0284c7', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              ↑
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+      {/* منطقة المحتوى الرئيسية */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden bg-gray-50">
+        {/* الشريط العلوي (Header) */}
+        <header className="bg-white border-b border-gray-100 px-5 py-4 flex items-center justify-between shadow-sm sticky top-0 z-10">
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-gray-600 hover:text-gray-900 md:hidden transition-colors p-1.5 rounded-lg hover:bg-gray-100">
+            <Menu size={24} />
+          </button>
+          <div className="flex items-center gap-2">
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${isVipUser ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>M</div>
+            <span className="font-bold text-lg text-gray-900">
+              {getActiveSectionName()}http://googleusercontent.com/generated_image_content/0
