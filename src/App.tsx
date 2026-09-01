@@ -14,7 +14,7 @@ export default function App() {
     if (passInput === VIP_PASSWORD) {
       setIsAdmin(true);
       setShowAdminModal(false);
-      alert('تم تفعيل رمز الوصول الكامل! جميع الميزات (التطبيقات، الألعاب، الواجبات) مفتوحة لك مجاناً وبدون أي حدود 🚀');
+      alert('تم تفعيل رمز الوصول الكامل! جميع الميزات مفتوحة لك مجاناً وبدون أي حدود 🚀');
     } else {
       alert('رمز التفعيل غير صحيح!');
     }
@@ -26,7 +26,7 @@ export default function App() {
       <header className="border-b border-slate-800 p-4 flex justify-between items-center bg-slate-900/50 sticky top-0 z-10">
         <h1 className="text-xl font-bold text-amber-400 flex items-center gap-2">
           المساعد العربي الذكي 🚀
-          {isAdmin && <span className="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500 px-2 py-0.5 rounded-full">👑 حساب مفتوح الميزات بالكامل (مجاني)</span>}
+          {isAdmin && <span className="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500 px-2 py-0.5 rounded-full">👑 حساب مفعل بالكامل</span>}
         </h1>
         
         <div className="flex gap-2">
@@ -109,48 +109,34 @@ export default function App() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* البرمجة وتطوير التطبيقات */}
               <div className="bg-slate-900 p-5 rounded-xl border border-slate-800 hover:border-amber-500 transition-all">
                 <div className="text-3xl mb-3">💻</div>
-                <h3 className="font-bold text-lg mb-1">صناعة التطبيقات والمواقع</h3>
+                <h3 className="font-bold text-lg mb-1">صناعة التطبيقات والم مواقع</h3>
                 <p className="text-sm text-slate-400 mb-3">
-                  {isAdmin 
-                    ? 'الاستخدام: غير محدود مجاناً 👑' 
-                    : 'يتطلب الاشتراك: الباقة المتوسطة (محدود) / الباقة الكبيرة (شبه محدود).'}
+                  {isAdmin ? 'الاستخدام: غير محدود مجاناً 👑' : 'يتطلب الاشتراك: الباقة المتوسطة (محدود) / الباقة الكبيرة (شبه محدود).'}
                 </p>
                 <button className="w-full bg-slate-800 text-amber-400 font-bold py-2 rounded-lg text-sm hover:bg-slate-700">ابدأ البرمجة</button>
               </div>
 
-              {/* قسم الألعاب الضخمة والسيرفرات (Zenless Zone Zero وألعاب الأونلاين) */}
               <div className="bg-slate-900 p-5 rounded-xl border border-amber-500/40 hover:border-amber-400 transition-all">
                 <div className="text-3xl mb-3">🎮</div>
-                <h3 className="font-bold text-lg mb-1 text-amber-300">تطوير الألعاب السحابية والسيرفرات (مثل Zenless Zone Zero)</h3>
-                <p className="text-sm text-slate-400 mb-3">توليد أنظمة ألعاب الأونلاين الكبيرة، ربط السيرفرات العالمية، الأكواد البرمجية لـ Unreal/Unity وشبكات اللعب الجماعي.</p>
-                <button className="w-full bg-amber-500 text-slate-950 font-bold py-2 rounded-lg text-sm hover:bg-amber-400">برمجة الألعاب والتأطير</button>
+                <h3 className="font-bold text-lg mb-1 text-amber-300">تطوير الألعاب السحابية والسيرفرات</h3>
+                <p className="text-sm text-slate-400 mb-3">توليد أنظمة ألعاب الأونلاين الكبيرة، ربط السيرفرات العالمية، وأكواد المحركات.</p>
+                <button className="w-full bg-amber-500 text-slate-950 font-bold py-2 rounded-lg text-sm hover:bg-amber-400">برمجة الألعاب</button>
               </div>
 
-              {/* تصميم اللوجوهات والصور */}
               <div className="bg-slate-900 p-5 rounded-xl border border-slate-800 hover:border-amber-500 transition-all">
                 <div className="text-3xl mb-3">🖼️</div>
                 <h3 className="font-bold text-lg mb-1">تصميم اللوجوهات والصور</h3>
-                <p className="text-sm text-slate-400 mb-3">ابتكر شعارات احترافية للشركات وصوراً عالية الجودة بأمر نصي بسيط.</p>
+                <p className="text-sm text-slate-400 mb-3">ابتكر شعارات احترافية وصوراً عالية الجودة بأمر نصي بسيط.</p>
                 <button className="w-full bg-slate-800 text-amber-400 font-bold py-2 rounded-lg text-sm hover:bg-slate-700">ابدأ التصميم</button>
               </div>
 
-              {/* المنشورات والإعلانات */}
               <div className="bg-slate-900 p-5 rounded-xl border border-slate-800 hover:border-amber-500 transition-all">
                 <div className="text-3xl mb-3">📱</div>
                 <h3 className="font-bold text-lg mb-1">المنشورات الدعائية والتسويق</h3>
-                <p className="text-sm text-slate-400 mb-3">صياغة إعلانات جذابة، نصوص تسويقية، وخطط ترويجية متكاملة لجميع المنصات.</p>
+                <p className="text-sm text-slate-400 mb-3">صياغة إعلانات جذابة ونصوص تسويقية للمنصات.</p>
                 <button className="w-full bg-slate-800 text-amber-400 font-bold py-2 rounded-lg text-sm hover:bg-slate-700">صمّم إعلانك</button>
-              </div>
-
-              {/* صناعة الفيديوهات */}
-              <div className="bg-slate-900 p-5 rounded-xl border border-slate-800 hover:border-amber-500 transition-all">
-                <div className="text-3xl mb-3">🎬</div>
-                <h3 className="font-bold text-lg mb-1">صناعة الفيديوهات والأنيميشن</h3>
-                <p className="text-sm text-slate-400 mb-3">تحويل النصوص والأفكار إلى مقاطع فيديو قصيرة أو مشاهد أنيميشن متحركة.</p>
-                <button className="w-full bg-slate-800 text-amber-400 font-bold py-2 rounded-lg text-sm hover:bg-slate-700">صانع الفيديوهات</button>
               </div>
             </div>
           </div>
@@ -161,12 +147,11 @@ export default function App() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-slate-900 p-5 rounded-xl border border-slate-800 flex flex-col justify-between">
               <div>
-                <h3 className="font-bold text-lg">الباقة المجانية (الصغيرة)</h3>
+                <h3 className="font-bold text-lg">الباقة المجانية</h3>
                 <p className="text-2xl font-bold my-2">0 ج.م</p>
                 <ul className="text-sm text-slate-400 space-y-2 mt-4">
                   <li>🔹 استوديو الإبداع: محدود جداً</li>
-                  <li>❌ صناعة التطبيقات: <b>غير متوفرة</b></li>
-                  <li>🔹 حل الواجبات: غير متوفر</li>
+                  <li>❌ صناعة التطبيقات: غير متوفرة</li>
                 </ul>
               </div>
               <button className="w-full mt-6 bg-slate-800 text-white font-bold py-2 rounded-lg text-sm">مجانية</button>
@@ -174,12 +159,11 @@ export default function App() {
 
             <div className="bg-slate-900 p-5 rounded-xl border border-amber-500/50 flex flex-col justify-between">
               <div>
-                <h3 className="font-bold text-lg text-amber-400">الباقة الأساسية (المتوسطة)</h3>
+                <h3 className="font-bold text-lg text-amber-400">الباقة الأساسية</h3>
                 <p className="text-2xl font-bold my-2">150 ج.م <span className="text-xs text-slate-400">/شهرياً</span></p>
                 <ul className="text-sm text-slate-300 space-y-2 mt-4">
-                  <li>✨ صناعة التطبيقات والمواقع: <b>محدود</b></li>
-                  <li>✨ استوديو الإبداع والألعاب: شبه محدود</li>
-                  <li>✨ حل واجبات: أقل من شبه محدود (50%)</li>
+                  <li>✨ صناعة التطبيقات: محدود</li>
+                  <li>✨ استوديو الإبداع: شبه محدود</li>
                 </ul>
               </div>
               <button className="w-full mt-6 bg-amber-500 text-slate-950 font-bold py-2 rounded-lg text-sm">اشترك</button>
@@ -187,12 +171,11 @@ export default function App() {
 
             <div className="bg-slate-900 p-5 rounded-xl border border-amber-400 flex flex-col justify-between">
               <div>
-                <h3 className="font-bold text-lg text-amber-300">الباقة الاحترافية (الكبيرة)</h3>
+                <h3 className="font-bold text-lg text-amber-300">الباقة الاحترافية</h3>
                 <p className="text-2xl font-bold my-2">350 ج.م <span className="text-xs text-slate-400">/شهرياً</span></p>
                 <ul className="text-sm text-slate-300 space-y-2 mt-4">
-                  <li>🚀 صناعة التطبيقات والمواقع: <b>شبه محدود</b></li>
-                  <li>🚀 استوديو الإبداع والألعاب: غير محدود</li>
-                  <li>🚀 حل واجبات كامل 100%</li>
+                  <li>🚀 صناعة التطبيقات: شبه محدود</li>
+                  <li>🚀 استوديو الإبداع: غير محدود</li>
                 </ul>
               </div>
               <button className="w-full mt-6 bg-amber-400 text-slate-950 font-bold py-2 rounded-lg text-sm">اشترك</button>
