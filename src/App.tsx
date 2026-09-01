@@ -14,17 +14,21 @@ import {
   AlertTriangle,
   KeyRound,
   ShieldCheck,
-  Zap
+  Zap,
+  Download,
+  Maximize2,
+  Video,
+  Gamepad2,
+  Cpu
 } from 'lucide-react';
 
-// مفتاح API الخاص بك (Gemini API)
+// مفتاح API لـ Gemini
 const GEMINI_API_KEY = "AQ.Ab8RN6LG5xv2wKFp-2Dz85_RB2nQQMCKOjI0FHN_Jt_OWZVydg";
 
-// البريد المميز ورمز التفعيل الخاص بك
+// بيانات حساب محمود رزق VIP
 const VIP_EMAIL = "mahmoudrizk532@gmail.com";
 const VIP_PASSCODE = "01205729239657Mm. Rizk$";
 
-// واجهة الرسائل
 interface Message {
   id: string;
   sender: 'user' | 'ai';
@@ -33,31 +37,30 @@ interface Message {
   isImage?: boolean;
 }
 
-// الأقسام الرئيسية في القائمة الجانبية
 const SECTIONS = [
-  { id: 'library', name: 'المكتبة الرقمية', icon: Library },
-  { id: 'designs', name: 'استوديو التصميم', icon: Palette },
-  { id: 'logo', name: 'صناعة الشعارات', icon: Sparkles },
-  { id: 'ads', name: 'الحملات الإعلانية', icon: ImageIcon },
-  { id: 'apps', name: 'تطوير البرمجيات', icon: Code },
+  { id: 'logo', name: 'تصميم الشعارات واللوجو 8K', icon: Sparkles },
+  { id: 'designs', name: 'استوديو الصور والفنون', icon: Palette },
+  { id: 'apps', name: 'تطوير الأكواد والبرمجيات', icon: Code },
+  { id: 'games', name: 'مساعد تصميم الألعاب 3D', icon: Gamepad2 },
+  { id: 'video', name: 'صناعة سيناريو الفيديو', icon: Video },
+  { id: 'library', name: 'المكتبة الرقمية الشاملة', icon: Library },
 ];
 
 export default function App() {
   const [userEmail] = useState<string>(VIP_EMAIL);
   const [passcode, setPasscode] = useState<string>('');
   const [isActivatedByCode, setIsActivatedByCode] = useState<boolean>(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
-  // التحقق هل الحساب مفعل عبر البريد المميز أو عبر رمز التفعيل
   const isVipUser = (userEmail.toLowerCase().trim() === VIP_EMAIL.toLowerCase()) || isActivatedByCode;
 
-  // المحادثة الابتدائية
   const [messages, setMessages] = useState<Message[]>([
     { 
       id: '1', 
       sender: 'ai', 
       text: isVipUser 
-        ? `أهلاً بك يا محمود 👋\nتم التعرف على حسابك وتفعيل نظام VIP الذهبي بالكامل. جميع المزايا المتقدمة وتوليد الصور والتحليل متاح الآن مجاناً بدون اشتراك 🔓.`
-        : 'أهلاً بك في Arabian AI. أدخل رمز التفعيل أو اشترك للوصول إلى كافة المزايا المتقدمة.'
+        ? `مرحباً بك يا محمود (MAHMOUD RIZK) في تطبيق ARABIAN AI VIP 🚀\nتم تفعيل النظام الذهبي الشامل:\n• توليد وتنزيل الشعارات والتصاميم عالية الدقة 8K.\n• كتابة وتطوير أكواد البرمجة والألعاب.\n• معالجة واستجابة فورية عبر Gemini API.`
+        : 'أهلاً بك في Arabian AI Pro. يرجى إدخال رمز VIP لفتح جميع الإمكانيات.'
     }
   ]);
 
@@ -65,30 +68,27 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [activeTab, setActiveTab] = useState<'chat' | 'library' | 'designs' | 'logo' | 'ads' | 'apps'>('chat');
-  
+  const [activeTab, setActiveTab] = useState<string>('logo');
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // التمرير تلقائياً لآخر رسالة
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
-  // دالة تفعيل الكود
   const handleActivatePasscode = () => {
     if (passcode.trim() === VIP_PASSCODE) {
       setIsActivatedByCode(true);
-      alert("تم تفعيل حساب VIP بنجاح! مرحباً بك في VIP UNLIMITED 🚀");
+      alert("تم تفعيل حساب VIP الذهبي بنجاح!");
     } else {
       alert("رمز التفعيل غير صحيح!");
     }
   };
 
-  // دالة التعامل مع رفع الملفات
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!isVipUser) {
-      alert("إرفاق الملفات متاح فقط لحسابات VIP! يرجى التفعيل.");
+      alert("إرفاق الملفات متاح فقط لحسابات VIP!");
       return;
     }
     if (e.target.files && e.target.files[0]) {
@@ -96,18 +96,34 @@ export default function App() {
     }
   };
 
-  // دالة إرسال الرسائل
+  // دالة تنزيل الصور مباشرة على التليفون/الكمبيوتر
+  const downloadImage = async (url: string, filename: string = 'ArabianAI-Design.png') => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      window.open(url, '_blank');
+    }
+  };
+
   const handleSend = async () => {
     if ((!input.trim() && !selectedFile) || loading) return;
 
     const userQuery = input.trim();
     let mediaUrl = selectedFile ? URL.createObjectURL(selectedFile) : undefined;
     
-    // إضافة رسالة المستخدم
     const userMsg: Message = { 
       id: Date.now().toString(), 
       sender: 'user', 
-      text: userQuery || `[تم إرفاق ملف: ${selectedFile?.name}]`, 
+      text: userQuery || `[ملف مرفق: ${selectedFile?.name}]`, 
       mediaUrl 
     };
     
@@ -116,45 +132,46 @@ export default function App() {
     setSelectedFile(null);
     setLoading(true);
 
-    // فحص طلبات الصور واللوجوهات
-    const isImageRequest = /ارسم|صورة|لوجو|شعار|صمم|تصميم/i.test(userQuery);
+    // فحص طلبات الصور واللوجوهات والتصاميم
+    const isImageRequest = /ارسم|صورة|لوجو|شعار|صمم|تصميم|logo|image|draw/i.test(userQuery) || activeTab === 'logo' || activeTab === 'designs';
 
-    if (isImageRequest) {
+    if (isImageRequest && userQuery.length > 0) {
       if (!isVipUser) {
-        // حجب الخدمة لغير VIP
         setMessages(prev => [...prev, {
           id: (Date.now() + 1).toString(),
           sender: 'ai',
-          text: '⚠️ ميزة توليد الصور واللوجوهات مغلقة. يرجى تفعيل رمز VIP الخاص بك في القائمة الجانبية أو تسجيل الدخول بحساب mahmoudrizk532@gmail.com لفتحها.'
+          text: '⚠️ ميزة توليد الصور واللوجوهات مخصصة لأعضاء VIP.'
         }]);
         setLoading(false);
         return;
       }
 
-      // توليد الصورة لـ VIP
-      const promptEncoded = encodeURIComponent(userQuery);
-      const generatedImageUrl = `https://pollinations.ai/p/${promptEncoded}?width=1024&height=1024&seed=${Math.floor(Math.random() * 1000)}`;
+      const promptEncoded = encodeURIComponent(userQuery + ", ultra detailed 8k resolution, professional masterwork vector artwork");
+      const generatedImageUrl = `https://image.pollinations.ai/prompt/${promptEncoded}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random() * 100000)}`;
       
       setTimeout(() => {
         setMessages(prev => [...prev, {
           id: (Date.now() + 1).toString(),
           sender: 'ai',
-          text: `✨ تم إنشاء التصميم بنجاح لـ (${VIP_EMAIL}): "${userQuery}"`,
+          text: `✨ تم إنجاز التصميم بنجاح! اضغط على الصورة للتكبير أو اضغط زر التنزيل للحفظ المباشر على جهازك.`,
           mediaUrl: generatedImageUrl,
           isImage: true
         }]);
         setLoading(false);
-      }, 1500);
+      }, 2000);
       return;
     }
 
-    // توليد النص عبر Gemini API لغير طلبات الصور
+    // معالجة البرمجة والأكواد والردود العامة عبر Gemini API
     try {
+      const systemContext = `أنت مساعد ذكي احترافي مدمج في تطبيق Arabian AI المصمم بواسطة MAHMOUD RIZK. قم بالرد بدقة عالية، وتوفير الأكواد كاملة بدون اختصارات عند طلب البرمجة.`;
+      const fullPrompt = `${systemContext}\n\nطلب المستخدم: ${userQuery}`;
+
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: userQuery }] }]
+          contents: [{ parts: [{ text: fullPrompt }] }]
         })
       });
 
@@ -164,196 +181,226 @@ export default function App() {
       if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
         aiText = data.candidates[0].content.parts[0].text;
       } else {
-        aiText = 'عذراً، حدثت مشكلة أثناء المعالجة، يرجى إعادة المحاولة.';
+        aiText = 'عذراً، حدثت مشكلة في الاتصال بالخادم الرئيسي، يرجى المحاولة ثانية.';
       }
 
       setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), sender: 'ai', text: aiText }]);
 
     } catch (error) {
-      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), sender: 'ai', text: 'حدث خطأ في الاتصال بالسيرفر.' }]);
+      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), sender: 'ai', text: 'حدث خطأ في الشبكة أثناء الاتصال.' }]);
     } finally {
       setLoading(false);
     }
   };
 
-  const getActiveSectionName = () => {
-    if (activeTab === 'chat') return 'المحادثة الرئيسية';
-    return SECTIONS.find(s => s.id === activeTab)?.name || 'القسم المجهول';
-  };
-
   return (
-    // الخلفية العامة السوداء الداكنة
-    <div className="flex h-screen bg-[#0b0f17] text-gray-100 dir-rtl font-sans antialiased overflow-hidden">
+    <div className="flex h-screen bg-[#030508] text-gray-100 dir-rtl font-sans antialiased overflow-hidden select-none">
       
-      {/* القائمة الجانبية (Sidebar) - Dark Mode */}
-      <div className={`fixed inset-y-0 right-0 z-50 w-72 bg-[#111622]/95 backdrop-blur-xl shadow-2xl transform ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out md:relative md:translate-x-0 flex flex-col border-l border-gray-800/60`}>
-        {/* هيدر القائمة الجانبية */}
-        <div className="p-5 border-b border-gray-800/60 flex justify-between items-center bg-[#111622]">
-          <h1 className="text-xl font-black text-white tracking-wider flex items-center gap-2.5">
-            <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-              <Zap size={20} />
+      {/* نافذة التكبير والتنزيل الفوري */}
+      {previewImage && (
+        <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl flex items-center justify-center p-4">
+          <div className="relative max-w-4xl max-h-[90vh] flex flex-col items-center">
+            <button 
+              onClick={() => setPreviewImage(null)}
+              className="absolute -top-12 right-0 text-gray-400 hover:text-white p-2 rounded-full bg-gray-900/80"
+            >
+              <X size={24} />
+            </button>
+            <img src={previewImage} alt="Preview" className="max-w-full max-h-[75vh] object-contain rounded-2xl shadow-2xl border border-cyan-500/40" />
+            <div className="mt-5 flex gap-4">
+              <button 
+                onClick={() => downloadImage(previewImage)}
+                className="flex items-center gap-2.5 bg-gradient-to-r from-cyan-400 to-blue-600 text-black font-black px-7 py-3.5 rounded-2xl hover:brightness-110 transition-all shadow-xl shadow-cyan-500/20 active:scale-95"
+              >
+                <Download size={22} />
+                <span>تحميل الصورة على الهاتف فوراً</span>
+              </button>
             </div>
-            <span>Arabian <span className="text-emerald-400">AI</span></span>
+          </div>
+        </div>
+      )}
+
+      {/* القائمة الجانبية الفاخرة */}
+      <div className={`fixed inset-y-0 right-0 z-40 w-72 bg-[#070a10]/98 backdrop-blur-2xl shadow-2xl border-l border-cyan-950/40 transform ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out md:relative md:translate-x-0 flex flex-col`}>
+        <div className="p-5 border-b border-cyan-950/40 flex justify-between items-center bg-[#05070c]">
+          <h1 className="text-lg font-black tracking-wider flex items-center gap-3">
+            <div className="p-2.5 rounded-2xl bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-600 text-black shadow-lg shadow-cyan-500/20">
+              <Cpu size={22} />
+            </div>
+            <div className="flex flex-col">
+              <span className="bg-gradient-to-r from-white via-cyan-200 to-cyan-400 bg-clip-text text-transparent font-black tracking-widest text-base">ARABIAN AI</span>
+              <span className="text-[9px] text-cyan-400/80 font-mono tracking-widest">PRO EDITION</span>
+            </div>
           </h1>
-          <button onClick={() => setSidebarOpen(false)} className="md:hidden text-gray-400 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-gray-800/50">
+          <button onClick={() => setSidebarOpen(false)} className="md:hidden text-gray-400 hover:text-white p-1">
             <X size={20} />
           </button>
         </div>
 
-        {/* محتوى القائمة الجانبية */}
-        <div className="p-4 space-y-4 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-800">
-          {/* زر محادثة جديدة */}
+        <div className="p-4 space-y-4 flex-1 overflow-y-auto">
           <button 
-            onClick={() => { setActiveTab('chat'); setMessages([{ id: Date.now().toString(), sender: 'ai', text: `أهلاً بك محمود (${VIP_EMAIL})! تم تفعيل نظام VIP الذهبي بالكامل.`}]); setSidebarOpen(false); }}
-            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-gray-950 py-3 px-4 rounded-xl font-bold transition-all shadow-lg shadow-emerald-500/10 active:scale-98"
+            onClick={() => { setMessages([{ id: Date.now().toString(), sender: 'ai', text: `أهلاً بك يا محمود! التطبيق جاهز لمعالجة كافة الأوامر البرمجية والتصميمية.`}]); setSidebarOpen(false); }}
+            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 text-black py-3.5 px-4 rounded-2xl font-black transition-all shadow-lg shadow-cyan-500/20 active:scale-95 text-xs"
           >
             <Plus size={18} />
-            <span>محادثة جديدة✏️</span>
+            <span>جلسة عمل جديدة</span>
           </button>
 
-          {/* بطاقة الحساب المميز */}
-          <div className="bg-[#182030]/60 p-3.5 rounded-xl border border-gray-800/80 space-y-1">
-            <div className="text-[11px] font-semibold text-gray-400 flex items-center gap-1.5">
-              <ShieldCheck size={14} className="text-emerald-400" />
-              <span>الحساب النشط:</span>
+          <div className="bg-[#0b101a] p-3.5 rounded-2xl border border-cyan-900/30 space-y-1">
+            <div className="text-[11px] font-bold text-cyan-400 flex items-center gap-1.5">
+              <ShieldCheck size={14} />
+              <span>المطور / الحساب VIP:</span>
             </div>
-            <div className="text-xs font-mono font-medium text-emerald-300 truncate" title={userEmail}>{userEmail}</div>
+            <div className="text-xs font-mono font-bold text-gray-200 truncate" title={userEmail}>{userEmail}</div>
           </div>
 
-          {/* حالة الاشتراك / إدخال الرمز */}
           {isVipUser ? (
-            <div className="bg-emerald-950/40 text-emerald-300 p-3.5 rounded-xl border border-emerald-500/30 text-xs font-semibold flex items-center gap-2.5 shadow-green-100/10 shadow-sm">
-              <CheckCircle2 size={18} className="text-emerald-400 shrink-0" />
-              <span>تغطية VIP وميزات المحترفين مفعّلة بالكامل والكرت المفتوح مجاناً!</span>
+            <div className="bg-cyan-950/30 text-cyan-300 p-3.5 rounded-2xl border border-cyan-500/30 text-xs font-bold flex items-center gap-2.5">
+              <CheckCircle2 size={18} className="text-cyan-400 shrink-0" />
+              <span>اشتراك VIP Unlimited نشط مدى الحياة</span>
             </div>
           ) : (
-            <div className="bg-[#1c170d] p-3.5 rounded-xl border border-amber-500/30 space-y-2.5 shadow-amber-100/10 shadow-sm">
+            <div className="bg-[#161007] p-3.5 rounded-2xl border border-amber-500/30 space-y-2.5">
               <div className="text-amber-400 text-xs font-bold flex items-center gap-1.5">
                 <AlertTriangle size={15} />
-                <span>إدخال رمز التفعيل المميز🔑</span>
+                <span>إدخال كود VIP</span>
               </div>
               <div className="flex gap-1.5">
                 <input 
                   type="password"
                   value={passcode}
                   onChange={(e) => setPasscode(e.target.value)}
-                  placeholder="رمز VIP..."
-                  className="w-full bg-[#0b0f17] text-xs p-2 rounded-lg border border-amber-500/20 text-white outline-none focus:border-amber-500/50 placeholder-gray-600"
+                  placeholder="رمز التفعيل..."
+                  className="w-full bg-[#070a10] text-xs p-2 rounded-xl border border-amber-500/30 text-white outline-none focus:border-amber-400"
                 />
-                <button 
-                  onClick={handleActivatePasscode}
-                  className="bg-amber-500 text-gray-950 px-2.5 py-1.5 rounded-lg text-xs font-bold hover:bg-amber-400 transition-colors shrink-0"
-                >
+                <button onClick={handleActivatePasscode} className="bg-amber-400 text-black px-3 py-1 rounded-xl font-bold text-xs">
                   <KeyRound size={15} />
                 </button>
               </div>
             </div>
           )}
 
-          {/* قائمة الأقسام */}
-          <div className="pt-3 border-t border-gray-800/60 space-y-1">
-            <div className="text-[11px] font-bold text-gray-400 px-3 pb-2 uppercase tracking-wider">الأقسام الرئيسية</div>
+          <div className="pt-2 border-t border-gray-800/40 space-y-1">
+            <div className="text-[10px] font-bold text-gray-500 px-3 pb-2 uppercase tracking-widest">أقسام الذكاء الاصطناعي</div>
             {SECTIONS.map((section) => {
               const Icon = section.icon;
               const isActive = activeTab === section.id;
               return (
                 <button
                   key={section.id}
-                  onClick={() => { setActiveTab(section.id as any); setSidebarOpen(false); }}
-                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                  onClick={() => { setActiveTab(section.id); setSidebarOpen(false); }}
+                  className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-xs font-bold transition-all ${
                     isActive 
-                      ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm' 
-                      : 'text-gray-400 hover:bg-gray-800/40 hover:text-gray-200'
+                      ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 shadow-md' 
+                      : 'text-gray-400 hover:bg-gray-800/30 hover:text-gray-200'
                   }`}
                 >
-                  <Icon size={17} className={isActive ? 'text-emerald-400' : 'text-gray-400'} />
-                  <span>{section.name}</span>
+                  <Icon size={17} className={isActive ? 'text-cyan-400' : 'text-gray-500'} />
+                  <span className="truncate">{section.name}</span>
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* أسفل القائمة الجانبية - معلومات محمود */}
-        <div className="p-4 border-t border-gray-800/60 bg-[#0d121c] flex items-center justify-between">
+        <div className="p-4 border-t border-cyan-950/40 bg-[#05070c] flex items-center justify-between">
           <div className="flex items-center gap-2.5 truncate">
-             <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold text-sm">M</div>
-             <span className="font-bold text-xs text-gray-200 truncate" title="MAHMOUD RIZK">MAHMOUD RIZK</span>
+             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 text-black font-black flex items-center justify-center text-sm shadow-md">M</div>
+             <span className="font-black text-xs text-gray-200 tracking-wider truncate" title="MAHMOUD RIZK">MAHMOUD RIZK</span>
           </div>
-          <span className={`px-2.5 py-1 rounded-md text-[10px] font-black ${isVipUser ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-gray-800 text-gray-400'} tracking-wider`}>
-            {isVipUser ? 'VIP UNLIMITED' : 'FREE'}
+          <span className="px-2 py-1 rounded-lg text-[9px] font-black bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 tracking-wider">
+            OWNER
           </span>
         </div>
       </div>
 
-      {/* منطقة المحتوى الرئيسية */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#0b0f17]">
-        {/* الشريط العلوي (Header) */}
-        <header className="bg-[#111622]/80 backdrop-blur-md border-b border-gray-800/60 px-5 py-3.5 flex items-center justify-between sticky top-0 z-10">
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-gray-400 hover:text-white md:hidden p-1.5 rounded-lg hover:bg-gray-800/50">
+      {/* شاشة العمل الرئيسية */}
+      <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#030508]">
+        <header className="bg-[#060910]/90 backdrop-blur-xl border-b border-cyan-950/30 px-6 py-4 flex items-center justify-between">
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-gray-400 hover:text-white md:hidden p-1">
             <Menu size={22} />
           </button>
-          <div className="flex items-center gap-2">
-            <span className={`w-2 h-2 rounded-full ${isVipUser ? 'bg-emerald-400' : 'bg-blue-400'} animate-pulse`}></span>
-            <span className="font-bold text-sm text-gray-100">
-              {getActiveSectionName()}
+          <div className="flex items-center gap-2.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-md shadow-cyan-400 animate-pulse"></span>
+            <span className="font-bold text-xs md:text-sm text-gray-200">
+              {SECTIONS.find(s => s.id === activeTab)?.name || 'الرئيسية'}
             </span>
           </div>
           <div className="w-6" />
         </header>
 
-        {/* مساحة المحادثة والرسائل */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col items-center scrollbar-thin scrollbar-thumb-gray-800">
-          <div className="w-full max-w-2xl space-y-4">
+        {/* عرض محادثة الرسائل والمخرجات */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col items-center">
+          <div className="w-full max-w-2xl space-y-5">
             {messages.map((msg) => (
               <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`p-4 rounded-2xl max-w-[88%] text-sm leading-relaxed ${
+                <div className={`p-4 rounded-3xl max-w-[92%] text-xs md:text-sm leading-relaxed ${
                   msg.sender === 'user' 
-                    ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-gray-950 font-medium shadow-lg shadow-emerald-500/10' 
-                    : 'bg-[#141b27] border border-gray-800 text-gray-200 shadow-md'
+                    ? 'bg-gradient-to-r from-cyan-400 to-blue-600 text-black font-bold shadow-lg shadow-cyan-500/10' 
+                    : 'bg-[#080d17] border border-cyan-950/60 text-gray-200 shadow-xl'
                 }`}>
                   {msg.mediaUrl && (
-                    <img src={msg.mediaUrl} alt="media" className="max-w-full rounded-xl mb-3 border border-gray-700/50 shadow-lg" />
+                    <div className="relative group rounded-2xl overflow-hidden mb-3 border border-cyan-500/20 bg-black">
+                      <img 
+                        src={msg.mediaUrl} 
+                        alt="AI Generated" 
+                        className="w-full max-h-80 object-cover cursor-pointer transition-transform duration-300 group-hover:scale-105"
+                        onClick={() => setPreviewImage(msg.mediaUrl!)}
+                      />
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                        <button 
+                          onClick={() => setPreviewImage(msg.mediaUrl!)}
+                          className="bg-cyan-400 text-black px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 text-xs shadow-lg"
+                        >
+                          <Maximize2 size={15} /> تكبير
+                        </button>
+                        <button 
+                          onClick={() => downloadImage(msg.mediaUrl!)}
+                          className="bg-white text-black px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 text-xs shadow-lg"
+                        >
+                          <Download size={15} /> تنزيل
+                        </button>
+                      </div>
+                    </div>
                   )}
-                  <div className="whitespace-pre-wrap">{msg.text}</div>
+                  <div className="whitespace-pre-wrap font-mono">{msg.text}</div>
                 </div>
               </div>
             ))}
             {loading && (
-              <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold animate-pulse bg-emerald-950/30 border border-emerald-500/20 px-3.5 py-2 rounded-xl w-fit">
-                <Sparkles size={14} />
-                <span>جاري معالجة طلبك بواسطة الذكاء الاصطناعي والتوليد...⏳</span>
+              <div className="flex items-center gap-3 text-cyan-400 text-xs font-bold animate-pulse bg-cyan-950/30 border border-cyan-500/20 px-4 py-3 rounded-2xl w-fit">
+                <Sparkles size={16} />
+                <span>جاري تحليل الطلب وإنتاج المخرجات بدقة فائقة... ⚡</span>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
         </div>
 
-        {/* حقل الإدخال السفلي والتحكم */}
-        <div className="p-4 bg-[#111622]/90 border-t border-gray-800/60 shadow-inner-dark">
-          <div className="max-w-2xl mx-auto flex items-center gap-2 bg-[#171f2e] p-2 rounded-2xl border border-gray-800 focus-within:border-emerald-500/50 transition-all shadow-xl">
+        {/* حقل الإدخال والأوامر */}
+        <div className="p-4 bg-[#05070c] border-t border-cyan-950/30">
+          <div className="max-w-2xl mx-auto flex items-center gap-2 bg-[#090e18] p-2.5 rounded-2xl border border-cyan-900/40 focus-within:border-cyan-500/60 transition-all shadow-2xl">
             <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
             <button 
               onClick={() => fileInputRef.current?.click()} 
-              className={`p-2.5 rounded-xl transition-colors ${isVipUser ? 'text-emerald-400 hover:bg-emerald-500/10' : 'text-gray-500 hover:bg-gray-800/50'}`}
-              title={isVipUser ? "إرفاق ملف" : "متاح فقط للـ VIP"}
+              className="p-2.5 text-cyan-400 hover:bg-cyan-500/10 rounded-xl transition-colors"
             >
-              <Paperclip size={18} />
+              <Paperclip size={19} />
             </button>
             <input 
               type="text" 
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder={selectedFile ? `الملف: ${selectedFile.name}` : "اكتب سؤالك أو اكتب طلب تصميم..."} 
-              className="flex-1 bg-transparent border-none outline-none text-xs md:text-sm px-2 text-gray-100 placeholder-gray-500"
+              placeholder={selectedFile ? `الملف المرفق: ${selectedFile.name}` : "اطلب رسم شعار، كتابة كود، أو تصميم لعبة..."} 
+              className="flex-1 bg-transparent border-none outline-none text-xs md:text-sm px-2 text-white placeholder-gray-500"
             />
             <button 
               onClick={handleSend} 
               disabled={loading}
-              className="p-2.5 bg-emerald-500 text-gray-950 rounded-xl hover:bg-emerald-400 transition-all font-bold disabled:opacity-40 shadow-md shadow-emerald-500/20 active:scale-95"
+              className="p-3 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 text-black rounded-xl hover:brightness-110 transition-all font-bold disabled:opacity-40 shadow-lg shadow-cyan-500/20 active:scale-95"
             >
-              <Send size={17} />
+              <Send size={18} />
             </button>
           </div>
         </div>
