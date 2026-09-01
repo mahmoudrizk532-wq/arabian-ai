@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('studio');
+  const [activeTab, setActiveTab] = useState('studio')
   const [isKidsMode, setIsKidsMode] = useState(false);
 
   return (
