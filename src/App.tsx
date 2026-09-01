@@ -12,7 +12,6 @@ import {
   X,
   AlertTriangle,
   KeyRound,
-  ShieldCheck,
   Cpu,
   User,
   Bot,
@@ -20,8 +19,6 @@ import {
   Maximize2,
   Video,
   Gamepad2,
-  Lock,
-  Globe,
   Activity,
   BarChart3,
   Layers,
@@ -33,7 +30,7 @@ import {
 } from 'lucide-react';
 
 // ==========================================
-// SECURITY & CRYPTOGRAPHY LAYER
+// SECURITY ENGINE
 // ==========================================
 class SecurityEngine {
   private static readonly SALT = "ARABIAN_AI_SECURE_SALT_2026";
@@ -103,7 +100,7 @@ export default function App() {
     { 
       id: '1', 
       sender: 'ai', 
-      text: `أهلاً بك يا ${USER_DISPLAY_NAME} 👋 في نظام AURA AI PRO الفائق!\n• اللوحة التفاعلية جاهزة لبناء الأكواد، محاكات الأجهزة، وتوليد الفنون واللوجوهات بدقة عالية.`,
+      text: `أهلاً بك يا ${USER_DISPLAY_NAME} 👋 في نظام AURA AI PRO الفائق!\n• اللوحة التفاعلية جاهزة لبناء الأكواد، محاكاة الأجهزة، وتوليد الفنون واللوجوهات بدقة عالية.`,
       timestamp: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
     }
   ]);
@@ -198,8 +195,8 @@ export default function App() {
         .trim();
 
       const nameMap: { [key: string]: string } = {
-        'سون غوكو': 'Son Goku Super Saiyan Dragon Ball Z, vibrant glowing aura, crystal clear face, highly detailed',
-        'غوكو': 'Son Goku Dragon Ball Z HD, sharp focus, cinematic lighting',
+        'سون غوكو': 'Son Goku Super Saiyan Dragon Ball Z, authentic anime style, vivid colors, perfectly detailed face',
+        'غوكو': 'Son Goku Dragon Ball Z, iconic anime appearance, vibrant glowing aura, sharp facial expressions, clean anime lineart',
         'سيارة': 'futuristic luxury sports car 8k render, octane render',
         'لوجو': 'modern minimal vector logo icon, high contrast',
       };
@@ -214,12 +211,12 @@ export default function App() {
       if (userQuery.includes('لوجو') || userQuery.includes('شعار')) {
         enhancedPrompt = `professional vector logo of ${englishPrompt}, clean lines, vibrant colors, white background, masterpiece`;
       } else {
-        enhancedPrompt = `high quality 3D digital art of ${englishPrompt}, bright cinematic lighting, sharp focus, extremely detailed face, 8k resolution, Unreal Engine 5 render`;
+        enhancedPrompt = `${englishPrompt}, bright cinematic lighting, sharp focus, vibrant colors, masterpiece, high quality`;
       }
 
-      const finalPrompt = `${enhancedPrompt} --no dark shadows, blurry, low quality, distorted face, ugly`;
-      const promptEncoded = encodeURIComponent(finalPrompt);
-      const generatedImageUrl = `https://image.pollinations.ai/prompt/${promptEncoded}?width=1024&height=1024&nologo=true&enhance=true&seed=${Math.floor(Math.random() * 100000)}`;
+      // محرك Flux المحسن لتقديم إضاءة ناصعة وتفاصيل ملامح خالية من التشويه
+      const promptEncoded = encodeURIComponent(`${enhancedPrompt}, anime masterpiece, sharp details, vibrant lighting, highly detailed face`);
+      const generatedImageUrl = `https://image.pollinations.ai/prompt/${promptEncoded}?width=1024&height=1024&model=flux&nologo=true&seed=${Math.floor(Math.random() * 100000)}`;
       
       setTimeout(() => {
         setMessages(prev => [...prev, {
@@ -231,13 +228,13 @@ export default function App() {
           timestamp: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
         }]);
         setLoading(false);
-      }, 2000);
+      }, 1500);
       return;
     }
 
     try {
       const apiKey = SecurityEngine.deobfuscate(OBFUSCATED_KEY);
-      const systemContext = `أنت المساعد الذكي الفائق AURA AI المصمم بواسطة MAHMOUD RIZK. أجب بدقة علمية وبرمجية متناهية وبأعلى مستوى من الاحترافية.`;
+      const systemContext = `أنت المساعد الذكي الفائق AURA AI المصمم بواسطة MAHMOUD RIZK. أجب بدقة علمية وبرمجية متناهية.`;
       const fullPrompt = `${systemContext}\n\nطلب المستخدم: ${userQuery}`;
 
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
@@ -280,7 +277,16 @@ export default function App() {
             <button onClick={() => setPreviewImage(null)} className="absolute -top-12 right-0 text-teal-400 hover:text-white p-2 rounded-full bg-gray-900/80">
               <X size={24} />
             </button>
-            <img src={previewImage} alt="Preview" className="max-w-full max-h-[75vh] object-contain rounded-3xl border border-teal-500/40 shadow-2xl shadow-teal-500/20" />
+            <img 
+              src={previewImage} 
+              alt="Preview" 
+              className="max-w-full max-h-[75vh] object-contain rounded-3xl border border-teal-500/40 shadow-2xl shadow-teal-500/20"
+              onError={(e) => {
+                (e.target as HTMLElement).style.display = 'none';
+                alert('عذراً، تعذر تحميل الصورة من السيرفر. حاول مرة أخرى!');
+                setPreviewImage(null);
+              }}
+            />
             <div className="mt-5 flex gap-4">
               <button onClick={() => downloadImage(previewImage)} className="flex items-center gap-2 bg-gradient-to-r from-teal-400 to-cyan-500 text-black font-black px-8 py-3.5 rounded-2xl shadow-xl shadow-teal-500/30 text-xs active:scale-95">
                 <Download size={18} />
@@ -337,7 +343,7 @@ export default function App() {
             <span>جلسة / تصميم جديد</span>
           </button>
 
-          {/* بطاقة حالة النظام (مطابقة للصورة) */}
+          {/* بطاقة حالة النظام */}
           <div className="bg-[#051124]/80 p-4 rounded-2xl border border-teal-800/40 space-y-2.5">
             <div className="text-[11px] font-bold text-teal-400 flex items-center justify-between border-b border-teal-900/40 pb-2">
               <span>حالة النظام</span>
@@ -350,10 +356,6 @@ export default function App() {
             <div className="flex justify-between items-center text-xs">
               <span className="text-teal-300 font-bold">نشطة</span>
               <span className="text-gray-400">الشبكة العصبية: نشطة</span>
-            </div>
-            <div className="flex justify-between items-center text-xs">
-              <span className="text-teal-300 font-bold">Active</span>
-              <span className="text-gray-400">الشبكة العصبية:</span>
             </div>
           </div>
 
@@ -420,7 +422,7 @@ export default function App() {
       {/* منطقة العرض والدردشة والتحليلات */}
       <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#020610]">
         
-        {/* الهيدر الأعلوي الفاخر */}
+        {/* الهيدر العلوي */}
         <header className="bg-[#040a17]/90 backdrop-blur-2xl border-b border-teal-900/30 px-6 py-4 flex items-center justify-between">
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-teal-400 hover:text-white md:hidden">
             <Menu size={22} />
@@ -441,21 +443,18 @@ export default function App() {
           </div>
         </header>
 
-        {/* جسم الشاشة الرئيسي (شبيه بالصورة) */}
+        {/* جسم الشاشة الرئيسي */}
         <div className="flex-1 overflow-y-auto p-4 md:p-6 flex flex-col items-center">
           
-          {/* لوحة الرسائل والبطاقات */}
           <div className="w-full max-w-4xl space-y-6">
 
-            {/* بطاقات المشاريع والتحليلات الجانبية */}
+            {/* بطاقات التحليلات الجانبية */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* بطاقة أحدث التحليلات */}
               <div className="bg-[#040c1d] p-4 rounded-2xl border border-teal-900/40 flex flex-col justify-between">
                 <div className="flex justify-between items-center text-xs font-bold text-teal-400 mb-3">
                   <span>أحدث التحليلات</span>
                   <span className="text-[10px] text-teal-600">3.50%</span>
                 </div>
-                {/* الرسم البياني التوضيحي السيبراني */}
                 <div className="h-24 flex items-end justify-between gap-1 pt-4 px-2">
                   {[40, 65, 30, 85, 50, 95, 70, 100].map((h, i) => (
                     <div key={i} className="w-full bg-teal-950/60 rounded-t-sm flex flex-col justify-end">
@@ -468,7 +467,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* بطاقة مشاريع جارية */}
               <div className="bg-[#040c1d] p-4 rounded-2xl border border-teal-900/40 space-y-3">
                 <div className="text-xs font-bold text-teal-400 border-b border-teal-900/30 pb-2">مشاريع جارية</div>
                 <div className="space-y-2">
@@ -497,7 +495,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* مساحة عرض المحادثة والنتائج */}
+            {/* مساحة المحادثة والنتائج */}
             <div className="space-y-4">
               {messages.map((msg) => (
                 <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -517,11 +515,11 @@ export default function App() {
                         : 'bg-[#051124] border border-teal-900/40 text-teal-100 shadow-xl rounded-tl-none'
                     }`}>
                       {msg.mediaUrl && (
-                        <div className="relative group rounded-2xl overflow-hidden mb-3 border border-teal-500/30 bg-black">
+                        <div className="relative group rounded-2xl overflow-hidden mb-3 border border-teal-500/30 bg-black min-h-[200px]">
                           <img 
                             src={msg.mediaUrl} 
                             alt="Generated" 
-                            className="w-full max-h-80 object-cover cursor-pointer"
+                            className="w-full max-h-80 object-cover cursor-pointer rounded-2xl"
                             onClick={() => setPreviewImage(msg.mediaUrl!)}
                           />
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
@@ -556,11 +554,10 @@ export default function App() {
           </div>
         </div>
 
-        {/* حقل الإدخال النيون الفاخر (مطابق للصورة) */}
+        {/* حقل الإدخال النيون */}
         <div className="p-4 bg-[#020610] border-t border-teal-900/30">
           <div className="max-w-2xl mx-auto space-y-3">
             
-            {/* خيارات الوصول السريع السريعة فوق مربع النص */}
             <div className="flex items-center justify-center gap-4 text-xs font-bold text-teal-400/80">
               <button onClick={() => setInput("تحليل النص: ")} className="flex items-center gap-1 hover:text-teal-200">
                 <FileText size={14} /> تحليل النص
@@ -573,7 +570,6 @@ export default function App() {
               </button>
             </div>
 
-            {/* حقل الكتابة النيون البيضاوي */}
             <div className="flex items-center gap-2 bg-[#051124] p-2.5 rounded-full border-2 border-teal-500/60 focus-within:border-cyan-400 shadow-lg shadow-teal-500/20 transition-all">
               <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
               <button onClick={() => fileInputRef.current?.click()} className="p-2.5 text-teal-400 hover:bg-teal-500/10 rounded-full">
